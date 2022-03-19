@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'axes',
     # my apps
     'accounts.apps.AccountsConfig',
+    'products.apps.ProductsConfig',
 ]
 
 MIDDLEWARE = [
