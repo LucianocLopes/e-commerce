@@ -1,5 +1,8 @@
 from django.contrib import admin
+
 from . import models
+
+from django_summernote.admin import SummernoteModelAdmin
 
 
 class VariationInLine(admin.TabularInline):
@@ -7,11 +10,18 @@ class VariationInLine(admin.TabularInline):
     extra = 1
 
 
-@admin.register(models.Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(SummernoteModelAdmin):
+    list_display = (
+        'product_name',
+        'short_description',
+        'get_price_marketing_br',
+        'get_price_marketing_promotional_br',
+    )
+    summernote_fields = ('description',)
     inlines = [
         VariationInLine
     ]
 
 
+admin.site.register(models.Product, ProductAdmin)
 admin.site.register(models.Variation)

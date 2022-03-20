@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
+from django.utils.text import slugify
 
 
 class Product(models.Model):
@@ -15,11 +16,11 @@ class Product(models.Model):
         max_length=255,
     )
     short_description = models.TextField(
-        verbose_name=_('descricao curta'),
+        verbose_name=_('descrição curta'),
         max_length=255,
     )
-    long_description = models.TextField(
-        verbose_name=_('descricao longa'),
+    description = models.TextField(
+        verbose_name=_('descrição longa'),
     )
     image = models.ImageField(
         verbose_name=_('imagem'),
@@ -29,16 +30,18 @@ class Product(models.Model):
     )
     product_slug = models.SlugField(
         verbose_name=_('slug'),
-        unique=True,
+        blank=True,
+        null=True,
+        max_length=2000,
     )
     price_marketing = models.DecimalField(
         verbose_name=_('preço marketing'),
-        max_digits=5,
+        max_digits=9,
         decimal_places=2,
     )
     price_marketing_promotional = models.DecimalField(
         verbose_name=_('preço marketing promocional'),
-        max_digits=5,
+        max_digits=9,
         decimal_places=2,
         default=0
     )
@@ -46,8 +49,8 @@ class Product(models.Model):
         verbose_name=_('tipo de produto'),
         max_length=1,
         choices=(
-            ('V', _('variação')),
-            ('S', _('simples')),
+            ('V', _('Variável')),
+            ('S', _('Simples')),
         )
     )
 
@@ -60,6 +63,14 @@ class Product(models.Model):
     def __str__(self):
         """Unicode representation of Produto."""
         return self.product_name.strip().title()
+
+    def get_price_marketing_br(self):
+        return f'R$ {self.price_marketing:.2f}'.replace('.', ',')
+    get_price_marketing_br.short_description = _('Preço')
+
+    def get_price_marketing_promotional_br(self):
+        return f'R$ {self.price_marketing_promotional:.2f}'.replace('.', ',')
+    get_price_marketing_promotional_br.short_description = _('Preço PROMO')
 
     @staticmethod
     def resize_image(img, new_width=800):
@@ -87,6 +98,10 @@ class Product(models.Model):
         )
 
     def save(self, *args, **kwargs):
+        if not self.product_slug:
+            slug = f'{slugify(self.product_name)}'
+            self.product_slug = slug
+
         super().save(*args, **kwargs)
 
         max_image_size = 800
@@ -112,12 +127,12 @@ class Variation(models.Model):
     )
     price = models.DecimalField(
         verbose_name=_('preço'),
-        max_digits=5,
+        max_digits=9,
         decimal_places=2,
     )
     price_promotional = models.DecimalField(
         verbose_name=_('preço promocional'),
-        max_digits=5,
+        max_digits=9,
         decimal_places=2,
         default=0,
     )

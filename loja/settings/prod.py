@@ -1,4 +1,4 @@
-from django.conf import settings
+from base import *
 
 
 # SECURITY

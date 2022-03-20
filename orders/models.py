@@ -14,7 +14,7 @@ class Order(models.Model):
     )
     total = models.DecimalField(
         verbose_name=_('total'),
-        max_digits=5,
+        max_digits=9,
         decimal_places=2
     )
     status = models.CharField(
@@ -66,12 +66,12 @@ class ItenOrder(models.Model):
     )
     price = models.DecimalField(
         verbose_name=_('preço'),
-        max_digits=5,
+        max_digits=9,
         decimal_places=2,
     )
     price_promotional = models.DecimalField(
         verbose_name=_('preço promocional'),
-        max_digits=5,
+        max_digits=9,
         decimal_places=2,
     )
     quantity = models.PositiveIntegerField(
